@@ -2,9 +2,11 @@ package com.example.rede_presidente;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.rede_presidente.databinding.ActivityCadastroBinding;
@@ -25,8 +27,16 @@ public class CadastroActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityCadastroBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        iniciaToobar();
         mAuth = FirebaseAuth.getInstance();
         binding.btnCriarConta.setOnClickListener(v -> validaDados());
+    }
+
+    private void iniciaToobar() {
+        Toolbar toolbar = binding.toolbar;
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
     }
 
     private void validaDados() {
@@ -35,6 +45,8 @@ public class CadastroActivity extends AppCompatActivity {
 
         if (!email.isEmpty()) {
             if (!senha.isEmpty()) {
+
+                binding.progressBar.setVisibility(View.VISIBLE);
 
                 criarContaFirebase(email, senha);
 
@@ -52,9 +64,12 @@ public class CadastroActivity extends AppCompatActivity {
         ).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
 
+                finish();
+
                 startActivity(new Intent(this, MainActivity.class));
 
             } else {
+                binding.progressBar.setVisibility(View.GONE);
                 Toast.makeText(this, "Ocorreu um Erro.", Toast.LENGTH_SHORT).show();
             }
         });
